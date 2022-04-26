@@ -1,0 +1,21 @@
+---
+- hosts: routers
+  tasks:
+    - name: Install package
+      apt:
+        pkg: cowsay
+- hosts: 192.168.100.254
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Check Hostname
+      command: hostname
+      register: hostname_rtr_l
+    - name: Set Hostname
+      hostname:
+        name: "{{ router_left }}"
+      when: hostname_rtr_l.stdout != "{{ router_left }}"
+    - name: After change hostname reboot machine
+      reboot:
+      when: hostname_rtr_l.stdout!= "{{ router_left }}"
+

@@ -1,0 +1,43 @@
+---
+- hosts: 5.5.5.100
+  vars_files:
+    - ./vars.yml
+  tasks:
+  - name: Install strongswan
+    apt:
+        name: strongswan
+        state: present
+  - name: Copy strongswan config
+    copy:
+      src: ./ipsec.conf
+      dest: /etc/ipsec.conf
+  - name: Copy psk
+    copy:
+      src: ./ipsec.secrets
+      dest: /etc/ipsec.secrets
+  - name: Restart ipsec
+    ansible.builtin.systemd:
+      state: restarted
+      daemon_reload: yes
+      name: ipsec
+- hosts: 192.168.100.254
+  vars_files:
+    - ./vars.yml
+  tasks:
+  - name: Install strongswan
+    apt:
+        name: strongswan
+        state: present
+  - name: Copy strongswan config
+    copy:
+      src: ./ipsec_RTL.conf
+      dest: /etc/ipsec.conf
+  - name: Copy psk
+    copy:
+      src: ./ipsec.secrets
+      dest: /etc/ipsec.secrets
+  - name: Restart ipsec
+    ansible.builtin.systemd:
+      state: restarted
+      daemon_reload: yes
+      name: ipsec
